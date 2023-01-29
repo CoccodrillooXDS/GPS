@@ -34,5 +34,20 @@
   "bugs": {
     "url": "https://github.com/CoccodrillooXDS/GPS/issues"
   },
-  "homepage": "https://github.com/CoccodrillooXDS/GPS#readme"
+  "homepage": "https://github.com/CoccodrillooXDS/GPS#readme",
+  "dependencies": {
+    "@serialport/list": "^10.5.0",
+    "angles": "^0.2.4",
+    "byline": "^5.0.0",
+    "chai": "^4.3.7",
+    "colors": "^1.4.0",
+    "express": "^4.18.2",
+    "gps": "^0.6.1",
+    "kalman": "^0.0.2",
+    "mocha": "^10.2.0",
+    "node-hid": "^2.1.2",
+    "serialport": "^9.2.8",
+    "socket.io": "^4.5.4",
+    "sylvester": "^0.0.21"
+  }
 }

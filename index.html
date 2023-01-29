@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>GPS Map</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit">
+        <meta name="viewport" content="initial-scale=1.0">
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="favicon.ico">
+        <style>
+            html, body {
+                font-family: 'Kanit', serif;
+                font-size: 16px;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            #map {
+                flex: 15;
+            }
+            .panel {
+                flex: 1;
+                width: 100%;
+                background-color: white;
+                padding: 0px;
+            }
+
+            header, .row {
+              display: flex;
+              width: 100%;
+            }
+            .col, .colt {
+              flex: 1;
+              padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            var socket = io();
+            function initMap() {
+                var gstate = {
+                    lat: 0,
+                    lng: 0
+                };
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    center: gstate,
+                    zoom: 5,
+                    mapTypeId: 'satellite',
+                    disableDefaultUI: true,
+                    zoomControl: true,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    fullscreenControl: false
+                });
+                var marker = new google.maps.Marker({
+                    position: gstate,
+                    map: map,
+                    title: 'Current position'
+                });
+                socket.on('position', function(state) {
+                    updateTable(state);
+                
+                    var oldmarker = new google.maps.Marker({
+                        position: gstate,
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            fillColor: 'red',
+                            strokeColor: 'red',
+                            glyph: 'red',
+                            scale: 2
+                        },
+                        title: (gstate.lat).toFixed(6) + ', ' + (gstate.lng).toFixed(6)
+                    })
+                
+                    gstate.lat = state.position.pos[0];
+                    gstate.lng = state.position.pos[1];
+                
+                    map.setCenter(gstate);
+                    map.zoom = 20;
+                    marker.setPosition(gstate);
+                });
+            
+                function updateTable(state) {
+                    $('#lat').html((state.lat).toFixed(6));
+                    $('#lng').html((state.lon).toFixed(6));
+                    $('#alt').html(state.alt + ' m');
+                    $('#speed').html((state.speed).toFixed(4) + ' km/h');
+                    $('#active').html(state.satsActive.length);
+                    $('#view').html(state.satsVisible.length);
+                }
+            }
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADf2Ss5DEZdZMFEJ0f8fmi1KcYRZMYLZI&callback=initMap" async defer></script>
+        <section class="panel">
+            <header>
+                <div class="row">
+                    <div class="colt">Latitude</div>
+                    <div class="colt">Longitude</div>
+                    <div class="colt">Altitude</div>
+                    <div class="colt">Speed</div>
+                    <div class="colt">Connected satellites</div>
+                    <div class="colt">Visible satellites</div>
+                </div>
+            </header>
+            <div class="row">
+                <div class="col" id="lat">0</div>
+                <div class="col" id="lng">0</div>
+                <div class="col" id="alt">0 m</div>
+                <div class="col" id="speed">0 km/h</div>
+                <div class="col" id="active">0</div>
+                <div class="col" id="view">0</div>
+            </div>
+          </section>
+    </body>
