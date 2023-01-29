@@ -1,0 +1,38 @@
+{
+  "name": "gps",
+  "version": "1.0.0",
+  "description": "Read NMEA data of a GPS Module from a Serial Port and show the current position on Google Maps",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoccodrillooXDS/GPS.git"
+  },
+  "keywords": [
+    "GPS",
+    "NMEA",
+    "Serial",
+    "Google Maps",
+    "NodeJS",
+    "Javascript",
+    "HTML",
+    "CSS",
+    "Google",
+    "Maps",
+    "Map",
+    "Position",
+    "Location",
+    "Geolocation",
+    "Module",
+    "Arduino",
+    "GPS Module"
+  ],
+  "author": "CoccodrillooXDS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CoccodrillooXDS/GPS/issues"
+  },
+  "homepage": "https://github.com/CoccodrillooXDS/GPS#readme"
+}
