@@ -25,8 +25,9 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 3. Open a Command Prompt or Terminal window
 4. Clone this repository by running `git clone https://github.com/CoccodrillooXDS/GPS`
 5. Enter the repository folder by running `cd GPS`
-6. Run `npm server` to start the application
-7. Follow the instructions on the Command Prompt or Terminal window
+6. Run `npm install` to install the dependencies
+7. Run `node server` to start the application
+8. Follow the instructions on the Command Prompt or Terminal window
 
 # Contributing
 You can contribute to the project by making a pull request or by creating an issue.

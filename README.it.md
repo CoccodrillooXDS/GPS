@@ -25,8 +25,9 @@ GPS è un'applicazione **Node.js** basata su **[GPS.js](https://github.com/infus
 3. Aprire un Prompt dei comandi o una finestra del Terminale
 4. Clonare questo repository eseguendo `git clone https://github.com/CoccodrillooXDS/GPS`
 5. Entrare nella cartella del repository eseguendo `cd GPS`
-6. Eseguire `npm server` per avviare l'applicazione
-7. Seguire le istruzioni sul prompt dei comandi o sulla finestra del terminale
+6. Eseguire `npm install` per installare le dipendenze
+7. Eseguire `node server` per avviare l'applicazione
+8. Seguire le istruzioni nella finestra del Prompt dei comandi o del Terminale
 
 # Contribuire al progetto
 È possibile contribuire al progetto facendo una pull request o creando una issue.
