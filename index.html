@@ -3,50 +3,209 @@
     <head>
         <title>GPS Map</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit">
+        <link rel="shortcut icon" href="favicon.ico">
+        <link rel="stylesheet" href="css/uikit.min.css">
         <meta name="viewport" content="initial-scale=1.0">
         <meta charset="utf-8">
-        <link rel="shortcut icon" href="favicon.ico">
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="js/uikit.min.js"></script>
+        <script src="js/uikit-icons.min.js"></script>
         <style>
             html, body {
                 font-family: 'Kanit', serif;
-                font-size: 16px;
+                font-family: 'Kanit', sans-serif;
+                font-family: 'Kanit', monospace;
+                font-size: 14px;
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
                 height: 100%;
+                width: 100%;
                 margin: 0;
                 padding: 0;
             }
+
             #map {
-                flex: 15;
-            }
-            .panel {
-                flex: 1;
-                width: 100%;
-                background-color: white;
-                padding: 0px;
+                flex: 6;
             }
 
-            header, .row {
-              display: flex;
-              width: 100%;
+            .panel {
+                flex: 1;
+                background-color: white;
             }
-            .col, .colt {
-              flex: 1;
-              padding: 5px;
+
+            .alert {
+                position: absolute;
+                top: 0;
+                left: 20px;
+                right: 20px;
+                width: auto;
+                z-index: 100;
             }
         </style>
     </head>
     <body>
         <div id="map"></div>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <section class="panel uk-padding">
+            <div class="uk-margin">
+                <label class="uk-form-label" for="settings">Settings</label>
+                <div class="uk-form-controls">
+                    <button class="uk-input uk-button uk-button-default" id="settingsButton" uk-toggle="target: #settings" type="button">Open</button>
+                </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="port">Serial Port</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="port" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="status">Serial Port status</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="status" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="gpsstatus">GPS status</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="gpsstatus" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="lat">Latitude</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="lat" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="lng">Longitude</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="lng" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="alt">Altitude</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="alt" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="speed">Speed</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="speed" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="active">Connected satellites</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="active" type="text" value="" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="view">Visible satellites</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="view" type="text" value="" disabled>
+                </div>
+            </div>
+        </section>
+        <div id="settings" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+                <h2 class="uk-modal-title">Settings</h2>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="portsec">Serial Port</label>
+                    <div class="uk-form-controls">
+                        <select class="uk-select" id="portsec">
+                            <option value="null">None</option>
+                        </select>
+                    </div>
+                <p class="uk-text-right">
+                    <button id="cancel" class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                    <button id="save" class="uk-button uk-button-primary" type="button">Save</button>
+                </p>
+            </div>
+        </div>
         <script>
             var socket = io();
+            
+            function reset() {
+                document.getElementById('port').value = 'null';
+                document.getElementById('status').value = 'Disconnected';
+                document.getElementById('status').style.color = '';
+                document.getElementById('gpsstatus').value = 'No sat. fix';
+                document.getElementById('gpsstatus').style.color = '';
+                document.getElementById('lat').value = 0;
+                document.getElementById('lng').value = 0;
+                document.getElementById('alt').value = '0 m';
+                document.getElementById('speed').value = '0 km/h';
+                document.getElementById('active').value = 0;
+                document.getElementById('view').value = 0;
+            }
+
+            reset();
+
+            document.getElementById('settings').addEventListener('click', function(e) {
+                if (e.target.id == 'save') {
+                    var port = document.getElementById('portsec').value;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/settings', true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify({port: port}));
+                    UIkit.modal('#settings').hide();
+                    document.getElementById('port').value = port;
+                }
+            });
+
+            socket.on('portstatus', function(status) {
+                document.getElementById('port').value = status.port;
+                document.getElementById('status').value = status.status;
+                if (status.status == 'Connected') {
+                    document.getElementById('status').style.color = 'green';
+                } else if (status.status == 'Error') {
+                    document.getElementById('status').style.color = 'red';
+                } else {
+                    reset();
+                }
+                if (status.gpsData) {
+                    document.getElementById('gpsstatus').value = 'Sat. fix';
+                    document.getElementById('gpsstatus').style.color = 'green';
+                } else if (status.status == 'Disconnected') {
+                    document.getElementById('gpsstatus').value = 'No sat. fix';
+                    document.getElementById('gpsstatus').style.color = '';
+                } else {
+                    document.getElementById('gpsstatus').value = 'No sat. fix';
+                    document.getElementById('gpsstatus').style.color = 'red';
+                }
+                // var select = document.getElementById('portsec');
+                // select.value = status.port;
+            });
+
+            socket.on('availablePorts', function(ports) {
+                var portList = ports.toString().split(',');
+                var select = document.getElementById('portsec');
+                var currentPort = select.options[select.selectedIndex].value;
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                for (var i = 0; i < portList.length; i++) {
+                    var opt = document.createElement('option');
+                    opt.value = portList[i];
+                    opt.innerHTML = portList[i];
+                    select.appendChild(opt);
+                }
+                if (currentPort != 'null') {
+                    select.value = currentPort;
+                }
+                // if it's still null, select the first option
+                if (select.value == '') {
+                    select.value = select.options[0].value;
+                }
+            });
+
             function initMap() {
                 var gstate = {
                     lat: 0,
                     lng: 0
                 };
+
                 var map = new google.maps.Map(document.getElementById('map'), {
                     center: gstate,
                     zoom: 5,
@@ -57,27 +216,33 @@
                     streetViewControl: false,
                     fullscreenControl: false
                 });
+
                 var marker = new google.maps.Marker({
                     position: gstate,
                     map: map,
                     title: 'Current position'
                 });
+
                 socket.on('position', function(state) {
                     updateTable(state);
                 
-                    var oldmarker = new google.maps.Marker({
-                        position: gstate,
-                        map: map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            fillColor: 'red',
-                            strokeColor: 'red',
-                            glyph: 'red',
-                            scale: 2
-                        },
-                        title: (gstate.lat).toFixed(6) + ', ' + (gstate.lng).toFixed(6)
-                    })
-                
+                    if (gstate.lat != 0 && gstate.lng != 0) {
+                        var oldmarker = new google.maps.Marker({
+                            position: gstate,
+                            map: map,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: 'red',
+                                strokeColor: 'red',
+                                glyph: 'red',
+                                fillOpacity: 1,
+                                strokeOpacity: 1,
+                                strokeWeight: 1,
+                                scale: 2
+                            },
+                            title: (gstate.lat).toFixed(6) + ', ' + (gstate.lng).toFixed(6)
+                    })};
+
                     gstate.lat = state.position.pos[0];
                     gstate.lng = state.position.pos[1];
                 
@@ -87,34 +252,22 @@
                 });
             
                 function updateTable(state) {
-                    $('#lat').html((state.lat).toFixed(6));
-                    $('#lng').html((state.lon).toFixed(6));
-                    $('#alt').html(state.alt + ' m');
-                    $('#speed').html((state.speed).toFixed(4) + ' km/h');
-                    $('#active').html(state.satsActive.length);
-                    $('#view').html(state.satsVisible.length);
+                    var lat = document.getElementById('lat');
+                    var lng = document.getElementById('lng');
+                    var alt = document.getElementById('alt');
+                    var speed = document.getElementById('speed');
+                    var active = document.getElementById('active');
+                    var view = document.getElementById('view');
+
+                    lat.value = (state.lat).toFixed(6);
+                    lng.value = (state.lon).toFixed(6);
+                    alt.value = state.alt + ' m';
+                    speed.value = (state.speed).toFixed(4) + ' km/h';
+                    active.value = state.satsActive.length;
+                    view.value = state.satsVisible.length;
                 }
             }
         </script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADf2Ss5DEZdZMFEJ0f8fmi1KcYRZMYLZI&callback=initMap" async defer></script>
-        <section class="panel">
-            <header>
-                <div class="row">
-                    <div class="colt">Latitude</div>
-                    <div class="colt">Longitude</div>
-                    <div class="colt">Altitude</div>
-                    <div class="colt">Speed</div>
-                    <div class="colt">Connected satellites</div>
-                    <div class="colt">Visible satellites</div>
-                </div>
-            </header>
-            <div class="row">
-                <div class="col" id="lat">0</div>
-                <div class="col" id="lng">0</div>
-                <div class="col" id="alt">0 m</div>
-                <div class="col" id="speed">0 km/h</div>
-                <div class="col" id="active">0</div>
-                <div class="col" id="view">0</div>
-            </div>
-          </section>
     </body>
+</html>

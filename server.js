@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -9,40 +10,9 @@ const colors = require('colors');
 const SerialPort = require('serialport');
 const parsers = SerialPort.parsers;
 const parser = new parsers.Readline({delimiter: '\r\n'});
+const { execSync } = require("child_process");
 
-var file = 'COM4';
-
-// SerialPort.list((err, ports) => {
-//   for (const port of ports) {
-//     console.log('Checking ${port.comName}...'.italic);
-//     const sp = new SerialPort(port.comName, { baudRate: 9600 });
-// 
-//     sp.on("open", function () {
-//       sp.on("data", function (data) {
-//         const dataStr = data.toString();
-//         if (dataStr.startsWith("$G")) {
-//             file = port.comName;
-//             sp.close();
-//             return;
-//         }
-//       });
-//     });
-// 
-//     sp.on("error", function (err) {
-//       console.log(colors.red.bold('Serial port error: ${err}'));
-//     });
-//   }
-// });
-
-if (file == '') {
-    console.log(colors.red.bold('No compatible serial port found.'));
-    process.exit(1);
-}
-
-console.log(colors.gray('Connecting to serial port ' + file + '...'));
-
-const port = new SerialPort(file, {baudRate: 9600});
-port.pipe(parser);
+var port = '';
 
 var GPS = require('gps');
 var gps = new GPS;
@@ -60,41 +30,81 @@ var u = $V([0, 0]);
 
 var filter = new Kalman($V([0, 0]), $M([[1, 0], [0, 1]]));
 
-port.on("error", function (err) {
-    console.log(colors.red.bold('' + err));
-    console.log(colors.gray('Reconnecting...'));
-    setTimeout(function() { port.open(); }, 2000);
-});
+var portstatus = {
+    port: '',
+    status: 'disconnected',
+    gpsData: false
+}
 
-port.on('close', function() {
-    console.log(colors.red.bold(file + ' disconnected.'));
-    console.log(colors.gray('Reconnecting...'));
-    setTimeout(function() { port.open(); }, 2000);
-});
+// function loop that checks for serial ports
+function checkPorts() {
+    var availablePorts = execSync("npx @serialport/list -f json").toString();
+    availablePorts = JSON.parse(availablePorts);
+    availablePorts = availablePorts.map(function(ports) {return ports.path;});
+    io.emit('availablePorts', availablePorts);
+    setTimeout(checkPorts, 1000);
+}
 
-port.on('open', function() {
-    console.log(colors.green('Connected to serial port ' + file + '.'));
-});
+checkPorts();
+
+var serport = {isOpen: false};
+
+function connectPort(port) {
+    if (serport.isOpen) {
+        serport.close();
+    }
+    serport = SerialPort(port, {baudRate: 9600});
+    serport.pipe(parser);
+    portstatus.port = port;
+
+    serport.on("error", function (err) {
+        portstatus.status = 'Error';
+        io.emit('portstatus', portstatus);
+        console.log(colors.red.bold('' + err));
+        setTimeout(function() {connectPort(port);}, 3000);
+    });
+    
+    serport.on('close', function() {
+        portstatus.port = 'null';
+        portstatus.status = 'Disconnected';
+        portstatus.gpsData = false;
+        io.emit('portstatus', portstatus);
+        console.log(colors.red.bold(port + ' disconnected.'));
+    });
+    
+    serport.on('open', function() {
+        portstatus.status = 'Connected';
+        io.emit('portstatus', portstatus);
+        console.log(colors.green.bold('Connected to serial port ' + port + '.'));
+    });
+}
 
 gps.on('GGA', function(data) {
     if (data.lat && data.lon) {
         filter.update({
-          A: A,
-          B: B,
-          C: C,
-          H: H,
-          R: R,
-          Q: Q,
-          u: u,
-          y: $V([data.lat, data.lon])
+            A: A,
+            B: B,
+            C: C,
+            H: H,
+            R: R,
+            Q: Q,
+            u: u,
+            y: $V([data.lat, data.lon])
         });
         gps.state.position = {
-          cov: filter.P.elements,
-          pos: filter.x.elements
+            cov: filter.P.elements,
+            pos: filter.x.elements
         };
-      }
-      io.emit('position', gps.state);
+        portstatus.gpsData = true;
+        io.emit('portstatus', portstatus);
+    } else{
+        portstatus.gpsData = false;
+        io.emit('portstatus', portstatus);
+    }
+    io.emit('position', gps.state);
 });
+
+app.use(express.json());
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
@@ -104,9 +114,49 @@ app.get('/favicon.ico', function(req, res) {
     res.sendFile(__dirname + '/favicon.ico');
 });
 
+// allow reading from css and js files
+app.get('/css/:file', function(req, res) {
+    res.sendFile(__dirname + '/css/' + req.params.file);
+});
+
+app.get('/js/:file', function(req, res) {
+    res.sendFile(__dirname + '/js/' + req.params.file);
+});
+
+app.post('/settings', function (req, res) {
+    console.log('Received a POST request on /settings'.yellow);
+    sport = req.body.port;
+    if (sport == 'null') {
+        if (serport.isOpen) {
+            console.log(colors.red.bold('Disconnecting from ' + port + '.'));
+            serport.close();
+        }
+        console.log(colors.red.bold('No serial port selected.'));
+    } else {
+        connectPort(sport);
+    }
+    res.send('Got a POST request');
+});
+
+io.on('connection', function(socket) {
+    try {
+        if (serport.isOpen) {
+            var portstatus = {
+                port: port,
+                status: 'connected'
+            }
+            io.emit('portstatus', portstatus);
+        }
+    } catch (e) {
+        if (e.message == 'serport is not defined') {}
+        else { console.log(colors.red.bold('' + e));}
+    }
+    
+});
+
 http.listen(3000, function() {
   console.log('Listening on port 3000'.yellow);
-  console.log('To view the map, open http://localhost:3000 in your browser'.grey);
+  console.log('To view the map, open http://localhost:3000 in your browser'.grey.italic);
 });
 
 parser.on('data', function(data) {
