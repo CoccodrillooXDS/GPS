@@ -56,12 +56,14 @@ function connectPort(port) {
     serport = SerialPort(port, {baudRate: 9600});
     serport.pipe(parser);
     portstatus.port = port;
+    serportListener(port);
+}
 
+function serportListener(port) {
     serport.on("error", function (err) {
         portstatus.status = 'Error';
         io.emit('portstatus', portstatus);
         console.log(colors.red.bold('' + err));
-        setTimeout(function() {connectPort(port);}, 3000);
     });
     
     serport.on('close', function() {
@@ -79,7 +81,7 @@ function connectPort(port) {
     });
 }
 
-gps.on('GGA', function(data) {
+gps.on('data', function(data) {
     if (data.lat && data.lon) {
         filter.update({
             A: A,
@@ -95,13 +97,18 @@ gps.on('GGA', function(data) {
             cov: filter.P.elements,
             pos: filter.x.elements
         };
+    }
+    io.emit('position', gps.state);
+});
+
+gps.on('GGA', function(data) {
+    if (data.lat && data.lon) {
         portstatus.gpsData = true;
         io.emit('portstatus', portstatus);
     } else{
         portstatus.gpsData = false;
         io.emit('portstatus', portstatus);
     }
-    io.emit('position', gps.state);
 });
 
 app.use(express.json());
@@ -132,6 +139,10 @@ app.post('/settings', function (req, res) {
             serport.close();
         }
         console.log(colors.red.bold('No serial port selected.'));
+        portstatus.port = 'null';
+        portstatus.status = 'Disconnected';
+        portstatus.gpsData = false;
+        io.emit('portstatus', portstatus);
     } else {
         connectPort(sport);
     }
@@ -155,7 +166,7 @@ io.on('connection', function(socket) {
 });
 
 http.listen(3000, function() {
-  console.log('Listening on port 3000'.yellow);
+  console.log('Listening on port '.blue + '3000'.green);
   console.log('To view the map, open http://localhost:3000 in your browser'.grey.italic);
 });
 

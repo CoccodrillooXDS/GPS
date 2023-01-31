@@ -172,7 +172,7 @@
                     document.getElementById('gpsstatus').style.color = '';
                 } else {
                     document.getElementById('gpsstatus').value = 'No sat. fix';
-                    document.getElementById('gpsstatus').style.color = 'red';
+                    document.getElementById('gpsstatus').style.color = '';
                 }
                 // var select = document.getElementById('portsec');
                 // select.value = status.port;
@@ -186,6 +186,9 @@
                     select.remove(1);
                 }
                 for (var i = 0; i < portList.length; i++) {
+                    if (portList[i] == '') {
+                        continue;
+                    }
                     var opt = document.createElement('option');
                     opt.value = portList[i];
                     opt.innerHTML = portList[i];
@@ -216,6 +219,8 @@
                     streetViewControl: false,
                     fullscreenControl: false
                 });
+
+                map.setTilt(0);
 
                 var marker = new google.maps.Marker({
                     position: gstate,
