@@ -62,8 +62,8 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 **Disconnect everything from the Arduino before proceeding**
 
 There are two versions of the Arduino sketch:
-* One with the **APC220** module (for **[apc220.ino](arduino/radio_arduino/radio_arduino.ino)**)
-* One without the **APC220** module (for **[gps.ino](arduino/basic_arduino/basic_arduino.ino)**)
+* One with the **APC220** module (**[radio_arduino.ino](arduino/radio_arduino/radio_arduino.ino)**)
+* One without the **APC220** module (**[basic_arduino.ino](arduino/basic_arduino/basic_arduino.ino)**)
 
 1. Upload one of the two sketches to your Arduino
 2. Disconnect the Arduino from your computer
