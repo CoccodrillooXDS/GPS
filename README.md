@@ -47,13 +47,14 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 4. Connect the Arduino to your computer
 5. Open the **Serial Monitor**
 6. Type `m` and press **Enter**
-   - It should bring up a menu like this: ![APC220 Menu](images/apc220Cfg.jpg)
-7. Follow the 'Write example' instruction and if you want, change the frequency
+   - It should bring up a menu like this:
+    ![APC220 Menu](images/apc220Cfg.jpg)
+1. Follow the 'Write example' instruction and if you want, change the frequency
    - Save the frequency you chose (you will need it to configure the other APC220 module) 
-8. Disconnect the Arduino from your computer
-9.  Disconnect the APC220 from the Arduino and connect the other APC220 module to the Arduino
-10. Reconnect the Arduino to your computer
-11. Repeat steps 6 and 7
+2. Disconnect the Arduino from your computer
+3.  Disconnect the APC220 from the Arduino and connect the other APC220 module to the Arduino
+4.  Reconnect the Arduino to your computer
+5.  Repeat steps 6 and 7
 
 # Arduino Setup
 **Disconnect everything from the Arduino before proceeding**
