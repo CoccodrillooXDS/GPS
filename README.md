@@ -70,12 +70,14 @@ There are two versions of the Arduino sketch:
     |------------|----|-----------|
     | VCC        | -> | 3.3V      |
     | GND        | -> | GND       |
-    | TX         | -> | Digital 4 |
-    | RX         | -> | Digital 3 |
+    | RX         | -> | Digital 4 |
+    | TX         | -> | Digital 3 |
 
 4. Connect the **APC220** module to the **Arduino** to the GND, 13, 12, 11, 10, 9 and 8 pins
 5. Connect the Arduino to your computer
 
+## Breadboard Circuit
+![Breadboard Circuit](images/breadboard.png)
 
 # Map Setup
 1. Install the required software (Node.js)
