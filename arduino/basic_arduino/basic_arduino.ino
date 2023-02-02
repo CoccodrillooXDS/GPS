@@ -1,12 +1,12 @@
 // ------------------------------------------------------------
-// Working with a GPS Module and Arduino
+// Working with a GPS Module and an Arduino
 // GPS Module: NEO-6M
 // Arduino: Arduino Uno
 // ------------------------------------------------------------
 
 
-#include <SoftwareSerial.h>
 // Include the SoftwareSerial library to allow the Arduino to communicate with the GPS module.
+#include <SoftwareSerial.h>
 
 // Define the pins that will be used to communicate with the GPS module.
 int RXPin = 4;
