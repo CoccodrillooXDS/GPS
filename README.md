@@ -31,14 +31,54 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 ## Hardware
 - **Arduino**
 - **GPS module** (I used a **[NEO-6M](https://amzn.eu/d/0F55El5)**)
+- **Radio Module** (optional) (I used an **[APC220](https://www.dfrobot.com/product-57.html)**)
 - **Breadboard**
 - **Jumper wires**
 - **USB cable**
 - **Computer**
 
+----
 
-# Installation
-1. Install the required software
+# APC220 Setup
+**Disconnect the APC220 from the Arduino before proceeding.**
+1. Upload the **[apc220Cfg.ino](arduino/apc220Cfg/apc220Cfg.ino)** sketch to your Arduino
+2. Disconnect the Arduino from your computer
+3. Connect the APC220 to the Arduino to the GND, 13, 12, 11, 10, 9 and 8 pins 
+4. Connect the Arduino to your computer
+5. Open the **Serial Monitor**
+6. Type `m` and press **Enter**
+   - It should bring up a menu like this: ![APC220 Menu](images/apc220Cfg.jpg)
+7. Follow the 'Write example' instruction and if you want, change the frequency
+   - Save the frequency you chose (you will need it to configure the other APC220 module) 
+8. Disconnect the Arduino from your computer
+9.  Disconnect the APC220 from the Arduino and connect the other APC220 module to the Arduino
+10. Reconnect the Arduino to your computer
+11. Repeat steps 6 and 7
+
+# Arduino Setup
+**Disconnect everything from the Arduino before proceeding**
+
+There are two versions of the Arduino sketch:
+* One with the **APC220** module (for **[apc220.ino](arduino/radio_arduino/radio_arduino.ino)**)
+* One without the **APC220** module (for **[gps.ino](arduino/basic_arduino/basic_arduino.ino)**)
+
+1. Upload one of the two sketches to your Arduino
+2. Disconnect the Arduino from your computer
+3. (_**APC220 only**_) Connect the **GPS module** to the **Arduino** using the following pins:
+
+    | GPS Module | -> | Arduino   |
+    |------------|----|-----------|
+    | VCC        | -> | 3.3V      |
+    | GND        | -> | GND       |
+    | TX         | -> | Digital 4 |
+    | RX         | -> | Digital 3 |
+
+4. Connect the **APC220** module to the **Arduino** to the GND, 13, 12, 11, 10, 9 and 8 pins
+5. Connect the Arduino to your computer
+
+
+# Map Setup
+1. Install the required software (Node.js)
 2. Clone this repository by running `git clone https://github.com/CoccodrillooXDS/GPS` or download the repository as a ZIP file and extract it
 3. Open Terminal or Command Prompt in the repository folder
 4. Run `npm install` to install the dependencies
@@ -46,7 +86,7 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 6. Open a web browser and visit `http://localhost:3000`
 
 # Contributing
-You can contribute to the project by making a pull request or by creating an issue.
+You can contribute to the project by creating a pull request or an issue.
 
 To contribute, you can fork the repository and after you made your changes, you can create a pull request.
 
