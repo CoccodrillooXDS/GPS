@@ -30,9 +30,9 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 
 ## Hardware
 - **Arduino**
-- **GPS module** (I used a **[NEO-6M](https://amzn.eu/d/0F55El5)**)
-- **Radio module** (optional) (I used an **[APC220](https://www.dfrobot.com/product-57.html)**)
-- **USB to UART Bridge** (optional) (I used a **[CP210x](https://www.aliexpress.com/item/32505898388.html)**)
+- **GPS module** (**[NEO-6M](https://amzn.eu/d/0F55El5)**)
+- **Radio module** (**[APC220](https://www.dfrobot.com/product-57.html)**) (optional)
+- **USB to UART Bridge** (**[CP210x](https://www.aliexpress.com/item/32505898388.html)**) (optional)
 - **Breadboard**
 - **Jumper wires**
 - **USB cable**
@@ -63,6 +63,8 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 
 ## Installing the CP210x Drivers
 To receive data from the APC220 module, you can use another Arduino with the APC220 module connected to it or you can use an **UART to USB bridge**.
+This project is designed to work with **CP210x**.
+
 * Visit the **[Silicon Labs website](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads)**
 * If you are using **Windows**, download the driver with the name `CP210x Windows Drivers`
 
