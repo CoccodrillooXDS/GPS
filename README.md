@@ -31,7 +31,8 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 ## Hardware
 - **Arduino**
 - **GPS module** (I used a **[NEO-6M](https://amzn.eu/d/0F55El5)**)
-- **Radio Module** (optional) (I used an **[APC220](https://www.dfrobot.com/product-57.html)**)
+- **Radio module** (optional) (I used an **[APC220](https://www.dfrobot.com/product-57.html)**)
+- **USB to UART Bridge** (optional) (I used a **[CP210x](https://www.aliexpress.com/item/32505898388.html)**)
 - **Breadboard**
 - **Jumper wires**
 - **USB cable**
@@ -39,7 +40,9 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 
 ----
 
-# APC220 Setup
+<details><summary><strong>Open this section if you are using the radio module</strong></summary>
+
+## APC220 Setup
 **Disconnect the APC220 from the Arduino before proceeding.**
 1. Upload the **[apc220Cfg.ino](arduino/apc220Cfg/apc220Cfg.ino)** sketch to your Arduino
 2. Disconnect the Arduino from your computer
@@ -58,16 +61,34 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 10.  Reconnect the Arduino to your computer
 11.  Repeat steps 6 and 7
 
-# Arduino Setup
+## Installing the CP210x Drivers
+To receive data from the APC220 module, you can use another Arduino with the APC220 module connected to it or you can use an **UART to USB bridge**.
+* Visit the **[Silicon Labs website](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads)**
+* If you are using **Windows**, download the driver with the name `CP210x Windows Drivers`
+
+    ![CP210x Drivers](images/cp210x_page.jpg)
+
+* Extract all the files from the ZIP file in a folder
+* Run the `CP210xVCPInstaller_x64.exe` file and follow the instructions to install the driver
+
+---
+
+</details>
+
+## Arduino Setup
 **Disconnect everything from the Arduino before proceeding**
 
 There are two versions of the Arduino sketch:
 * One with the **APC220** module (**[radio_arduino.ino](arduino/radio_arduino/radio_arduino.ino)**)
 * One without the **APC220** module (**[basic_arduino.ino](arduino/basic_arduino/basic_arduino.ino)**)
 
+
 1. Upload one of the two sketches to your Arduino
 2. Disconnect the Arduino from your computer
-3. (_**APC220 only**_) Connect the **GPS module** to the **Arduino** using the following pins:
+
+<details><summary>(<strong><em>APC220 Only</em></strong>)</summary>
+
+* Connect the **GPS module** to the **Arduino** using the following pins:
 
     | GPS Module | -> | Arduino   |
     |------------|----|-----------|
@@ -76,13 +97,25 @@ There are two versions of the Arduino sketch:
     | RX         | -> | Digital 4 |
     | TX         | -> | Digital 3 |
 
-4. Connect the **APC220** module to the **Arduino** to the GND, 13, 12, 11, 10, 9 and 8 pins
-5. Connect the Arduino to your computer
+* Connect the **APC220** module to the **Arduino** to the GND, 13, 12, 11, 10, 9 and 8 pins
+
+</details><p></p>
+
+3. Connect the Arduino to your computer
 
 ## Breadboard Circuit
+<details><summary><strong>With APC220</strong></summary>
+
+![Breadboard Circuit](images/breadboard_apc220.png)
+
+</details><p></p>
+<details><summary><strong>Without APC220</strong></summary>
+
 ![Breadboard Circuit](images/breadboard.png)
 
-# Map Setup
+</details><p></p>
+
+## Map Setup
 1. Install the required software (Node.js)
 2. Clone this repository by running `git clone https://github.com/CoccodrillooXDS/GPS` or download the repository as a ZIP file and extract it
 3. Open Terminal or Command Prompt in the repository folder
@@ -90,10 +123,10 @@ There are two versions of the Arduino sketch:
 5. Run `node server` to start the application
 6. Open a web browser and visit `http://localhost:3000`
 
-# Contributing
+## Contributing
 You can contribute to the project by creating a pull request or an issue.
 
 To contribute, you can fork the repository and after you made your changes, you can create a pull request.
 
-# License
+## License
 This project is licensed under the **MIT License**. See the **[LICENSE](LICENSE)** file for more information.
