@@ -248,8 +248,8 @@
                             title: (gstate.lat).toFixed(6) + ', ' + (gstate.lng).toFixed(6)
                     })};
 
-                    gstate.lat = state.position.pos[0];
-                    gstate.lng = state.position.pos[1];
+                    gstate.lat = state.lat;
+                    gstate.lng = state.lon;
                 
                     map.setCenter(gstate);
                     map.zoom = 20;
