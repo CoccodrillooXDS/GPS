@@ -107,10 +107,22 @@
                             <option value="null">None</option>
                         </select>
                     </div>
+                </div>
                 <p class="uk-text-right">
                     <button id="cancel" class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
                     <button id="save" class="uk-button uk-button-primary" type="button">Save</button>
                 </p>
+            </div>
+        </div>
+        <div id="webinfo" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+                <h2 class="uk-modal-title">About this project</h2>
+                <p>This project is a web-based GPS tracker that connects to a GPS module via serial port and shows the current position on a map.</p>
+                <p>It is made with Node.js, Express, UIkit and GPS.js.</p>
+                <p>This project is open source and can be found <a href="https://github.com/CoccodrillooXDS/GPS" target="_blank">here</a>.</p>
+                <p>Made by <a href="https://github.com/CoccodrillooXDS" target="_blank">CoccodrillooXDS</a> for: <a href="https://www.iiscastelli.edu.it/Pager.aspx?Page=mainpage" target="_blank">I.I.S. Benedetto Castelli</a>.</p>
+                <p class="uk-text-right">
+                    <button class="uk-button uk-button-default uk-modal-close" type="button">Close</button>
             </div>
         </div>
         <script>
@@ -132,6 +144,12 @@
 
             reset();
 
+            document.getElementById('settingsButton').addEventListener('mousedown', event => {
+                if (event.button == 2) {
+                    UIkit.modal('#webinfo').show();
+                }
+            });
+
             document.getElementById('settings').addEventListener('click', function(e) {
                 if (e.target.id == 'save') {
                     var port = document.getElementById('portsec').value;
@@ -145,6 +163,14 @@
             });
 
             socket.on('portstatus', function(status) {
+                if (document.getElementById('port').value != status.port && status.port == 'null') {
+                    UIkit.notification({
+                        message: 'Device disconnected!',
+                        status: 'warning',
+                        pos: 'top-center',
+                        timeout: 3000
+                    });
+                };
                 document.getElementById('port').value = status.port;
                 document.getElementById('status').value = status.status;
                 if (status.status == 'Connected') {
@@ -154,6 +180,7 @@
                 } else {
                     reset();
                 }
+                
                 if (status.gpsData) {
                     document.getElementById('gpsstatus').value = 'Sat. fix';
                     document.getElementById('gpsstatus').style.color = 'green';
