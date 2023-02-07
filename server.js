@@ -66,12 +66,14 @@ function serportListener(port) {
 }
 
 gps.on('data', function(data) {
-    if (data.lat && data.lon) {
-        portstatus.gpsData = true;
-        io.emit('portstatus', portstatus);
-    } else{
-        portstatus.gpsData = false;
-        io.emit('portstatus', portstatus);
+    if (data.type === 'GGA' || data.type === 'GLL' || data.type === 'RMC') {
+        if (data.lat && data.lon) {
+            portstatus.gpsData = true;
+            io.emit('portstatus', portstatus);
+        } else{
+            portstatus.gpsData = false;
+            io.emit('portstatus', portstatus);
+        }
     }
     io.emit('position', gps.state);
 });

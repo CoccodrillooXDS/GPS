@@ -16,7 +16,6 @@
                 font-family: 'Kanit', serif;
                 font-family: 'Kanit', sans-serif;
                 font-family: 'Kanit', monospace;
-                font-size: 14px;
                 display: flex;
                 flex-direction: row;
                 height: 100%;
@@ -31,76 +30,67 @@
 
             .panel {
                 flex: 1;
+                vertical-align: middle;
+                align-items: center;
                 background-color: white;
-            }
-
-            .alert {
-                position: absolute;
-                top: 0;
-                left: 20px;
-                right: 20px;
-                width: auto;
-                z-index: 100;
             }
         </style>
     </head>
     <body>
         <div id="map"></div>
-        <section class="panel uk-padding">
-            <div class="uk-margin">
-                <label class="uk-form-label" for="settings">Settings</label>
-                <div class="uk-form-controls">
-                    <button class="uk-input uk-button uk-button-default" id="settingsButton" uk-toggle="target: #settings" type="button">Open</button>
-                </div>
-            <div class="uk-margin">
+        <section class="panel uk-padding-small">
+            <div class="uk-margin-small">
+                <button class="uk-button uk-button-default uk-button-small uk-width-1-1" id="settingsButton" uk-toggle="target: #settings" type="button">Settings</button>
+            </div>
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="port">Serial Port</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="port" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="status">Serial Port status</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="status" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="gpsstatus">GPS status</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="gpsstatus" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="lat">Latitude</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="lat" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="lng">Longitude</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="lng" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="alt">Altitude</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="alt" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="speed">Speed</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="speed" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="active">Connected satellites</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="active" type="text" value="" disabled>
                 </div>
             </div>
-            <div class="uk-margin">
+            <div class="uk-margin-small">
                 <label class="uk-form-label" for="view">Visible satellites</label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="view" type="text" value="" disabled>
@@ -174,8 +164,6 @@
                     document.getElementById('gpsstatus').value = 'No sat. fix';
                     document.getElementById('gpsstatus').style.color = '';
                 }
-                // var select = document.getElementById('portsec');
-                // select.value = status.port;
             });
 
             socket.on('availablePorts', function(ports) {
@@ -197,7 +185,6 @@
                 if (currentPort != 'null') {
                     select.value = currentPort;
                 }
-                // if it's still null, select the first option
                 if (select.value == '') {
                     select.value = select.options[0].value;
                 }
