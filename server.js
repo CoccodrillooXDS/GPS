@@ -17,10 +17,12 @@ var gps = new GPS;
 var portstatus = {
     port: '',
     status: 'disconnected',
-    gpsData: false
+    gpsData: false,
+    printdata: false
 }
 
-// function loop that checks for serial ports
+var serport = {isOpen: false};
+
 function checkPorts() {
     var availablePorts = execSync("npx @serialport/list -f json").toString();
     availablePorts = JSON.parse(availablePorts);
@@ -31,16 +33,23 @@ function checkPorts() {
 
 checkPorts();
 
-var serport = {isOpen: false};
-
-function connectPort(port) {
+function connectPort(sp) {
     if (serport.isOpen) {
         serport.close();
+        setTimeout(function() {
+            serport = SerialPort(sp, {baudRate: 9600});
+            serport.pipe(parser);
+            port = sp;
+            portstatus.port = sp;
+            serportListener(sp);
+        }, 1000);
+    } else {
+        serport = SerialPort(sp, {baudRate: 9600});
+        serport.pipe(parser);
+        port = sp;
+        portstatus.port = sp;
+        serportListener(sp);
     }
-    serport = SerialPort(port, {baudRate: 9600});
-    serport.pipe(parser);
-    portstatus.port = port;
-    serportListener(port);
 }
 
 function serportListener(port) {
@@ -88,7 +97,6 @@ app.get('/favicon.ico', function(req, res) {
     res.sendFile(__dirname + '/favicon.ico');
 });
 
-// allow reading from css and js files
 app.get('/css/:file', function(req, res) {
     res.sendFile(__dirname + '/css/' + req.params.file);
 });
@@ -107,13 +115,29 @@ app.post('/settings', function (req, res) {
         }
         console.log(colors.red.bold('No serial port selected.'));
         portstatus.port = 'null';
+        port = 'null';
         portstatus.status = 'Disconnected';
         portstatus.gpsData = false;
         io.emit('portstatus', portstatus);
     } else {
         connectPort(sport);
     }
+    if (req.body.printdata && !portstatus.printdata) {
+        portstatus.printdata = true;
+        console.log('Serial port data will be printed to the console.'.green.italic.bold)
+        io.emit('portstatus', portstatus);
+    } else if (!req.body.printdata && portstatus.printdata) {
+        portstatus.printdata = false;
+        console.log('Serial port data will no longer be printed to the console.'.yellow.italic.bold)
+        io.emit('portstatus', portstatus);
+    }
     res.send('Got a POST request');
+});
+
+app.get('/settings', function (req, res) {
+    console.log('Received a GET request on /settings'.yellow);
+
+    res.send(portstatus);
 });
 
 io.on('connection', function(socket) {
@@ -142,5 +166,8 @@ parser.on('data', function(data) {
         gps.update(data);
     } catch (e) {
         console.log(colors.yellow('Ignoring GPS error: ' + e));
+    }
+    if (portstatus.printdata) {
+        console.log(data);
     }
 });
