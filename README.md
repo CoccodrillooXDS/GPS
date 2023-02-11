@@ -46,7 +46,7 @@ It is designed to be used with an **Arduino** microcontroller, but can be used w
 **Disconnect the APC220 from the Arduino before proceeding.**
 1. Upload the **[apc220Cfg.ino](arduino/apc220Cfg/apc220Cfg.ino)** sketch to your Arduino
 2. Disconnect the Arduino from your computer
-3. Connect the APC220 to the Arduino to the GND, 13, 12, 11, 10, 9 and 8 pins 
+3. Connect the APC220 to the Arduino on the GND, 13, 12, 11, 10, 9 and 8 pins 
 4. Connect the Arduino to your computer
 5. Open the **Serial Monitor**
 6. Type `m` and press **Enter**
