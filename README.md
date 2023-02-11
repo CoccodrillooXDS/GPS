@@ -98,7 +98,7 @@ There are two versions of the Arduino sketch:
 
 <details><summary>(<strong><em>APC220 Only</em></strong>)</summary>
 
-* Connect the **APC220** module to the **Arduino** to the GND, 13, 12, 11, 10, 9 and 8 pins
+* Connect the **APC220** module to the **Arduino** on the GND, 13, 12, 11, 10, 9 and 8 pins
 
 </details><p></p>
 
