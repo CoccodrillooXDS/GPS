@@ -87,9 +87,6 @@ There are two versions of the Arduino sketch:
 
 1. Upload one of the two sketches to your Arduino
 2. Disconnect the Arduino from your computer
-
-<details><summary>(<strong><em>APC220 Only</em></strong>)</summary>
-
 * Connect the **GPS module** to the **Arduino** using the following pins:
 
     | GPS Module | -> | Arduino   |
@@ -99,11 +96,13 @@ There are two versions of the Arduino sketch:
     | RX         | -> | Digital 4 |
     | TX         | -> | Digital 3 |
 
+<details><summary>(<strong><em>APC220 Only</em></strong>)</summary>
+
 * Connect the **APC220** module to the **Arduino** to the GND, 13, 12, 11, 10, 9 and 8 pins
 
 </details><p></p>
 
-3. Connect the Arduino to your computer
+1. Connect the Arduino to your computer
 
 ## Breadboard Circuit
 <details><summary><strong>With APC220</strong></summary>
