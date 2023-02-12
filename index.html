@@ -256,7 +256,11 @@
                 });
 
                 socket.on('position', function(state) {
-                    updateTable(state);
+                    try {
+                        updateTable(state);
+                    } catch (e) {
+                        console.log(e);
+                    }
                 
                     if (gstate.lat != 0 && gstate.lng != 0) {
                         var oldmarker = new google.maps.Marker({
@@ -290,13 +294,19 @@
                     var speed = document.getElementById('speed');
                     var active = document.getElementById('active');
                     var view = document.getElementById('view');
-
+                    
                     lat.value = (state.lat).toFixed(6);
                     lng.value = (state.lon).toFixed(6);
                     alt.value = state.alt + ' m';
-                    speed.value = (state.speed).toFixed(4) + ' km/h';
-                    active.value = state.satsActive.length;
-                    view.value = state.satsVisible.length;
+                    if (state.speed != null) {
+                        speed.value = (state.speed).toFixed(4) + ' km/h';
+                    }
+                    if (state.satsActive != null) {
+                        active.value = state.satsActive.length;
+                    }
+                    if (state.satsVisible != null) {
+                        view.value = state.satsVisible.length;
+                    }
                 }
             }
         </script>
