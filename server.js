@@ -72,6 +72,17 @@ function serportListener(port) {
         io.emit('portstatus', portstatus);
         console.log(colors.green.bold('Connected to serial port ' + port + '.'));
     });
+
+    serport.on('data', function(data) {
+        if (portstatus.printdata) {
+            console.log(colors.cyan(data.toString()));
+        }
+        try {
+            gps.update(data.toString());
+        } catch (e) {
+            console.log(colors.yellow('Ignoring GPS error: ' + e.toString()));
+        }
+    });
 }
 
 gps.on('data', function(data) {
@@ -134,12 +145,6 @@ app.post('/settings', function (req, res) {
     res.send('Got a POST request');
 });
 
-app.get('/settings', function (req, res) {
-    console.log('Received a GET request on /settings'.yellow);
-
-    res.send(portstatus);
-});
-
 io.on('connection', function(socket) {
     try {
         if (serport.isOpen) {
@@ -161,13 +166,15 @@ http.listen(3000, function() {
   console.log('To view the map, open http://localhost:3000 in your browser'.grey.italic);
 });
 
-parser.on('data', function(data) {
-    try {
-        gps.update(data);
-    } catch (e) {
-        console.log(colors.yellow('Ignoring GPS error: ' + e));
-    }
-    if (portstatus.printdata) {
-        console.log(data);
-    }
-});
+// Disabled the parser as it doesn't fully work with serial devices
+
+//parser.on('data', function(data) {
+//    try {
+//        gps.update(data);
+//    } catch (e) {
+//        console.log(colors.yellow('Ignoring GPS error: ' + e));
+//    }
+//    if (portstatus.printdata) {
+//        console.log(data);
+//    }
+//});
