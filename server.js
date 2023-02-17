@@ -18,7 +18,8 @@ var portstatus = {
     port: '',
     status: 'disconnected',
     gpsData: false,
-    printdata: false
+    printdata: false,
+    useparser: true
 }
 
 var serport = {isOpen: false};
@@ -74,13 +75,15 @@ function serportListener(port) {
     });
 
     serport.on('data', function(data) {
-        if (portstatus.printdata) {
-            console.log(colors.cyan(data.toString()));
-        }
-        try {
-            gps.update(data.toString());
-        } catch (e) {
-            console.log(colors.yellow('Ignoring GPS error: ' + e.toString()));
+        if (!portstatus.useparser) {
+            if (portstatus.printdata) {
+                console.log(colors.cyan(data.toString()));
+            }
+            try {
+                gps.update(data.toString());
+            } catch (e) {
+                console.log(colors.yellow('Ignoring GPS error: ' + e.toString()));
+            }
         }
     });
 }
@@ -142,6 +145,15 @@ app.post('/settings', function (req, res) {
         console.log('Serial port data will no longer be printed to the console.'.yellow.italic.bold)
         io.emit('portstatus', portstatus);
     }
+    if (req.body.useparser && !portstatus.useparser) {
+        portstatus.useparser = true;
+        console.log('Serial port data will be parsed by a serial port parser.'.green.italic.bold)
+        io.emit('portstatus', portstatus);
+    } else if (!req.body.useparser && portstatus.useparser) {
+        portstatus.useparser = false;
+        console.log('Serial port data will be parsed by a JavaScript integrated function'.green.italic.bold)
+        io.emit('portstatus', portstatus);
+    }
     res.send('Got a POST request');
 });
 
@@ -166,15 +178,15 @@ http.listen(3000, function() {
   console.log('To view the map, open http://localhost:3000 in your browser'.grey.italic);
 });
 
-// Disabled the parser as it doesn't fully work with serial devices
-
-//parser.on('data', function(data) {
-//    try {
-//        gps.update(data);
-//    } catch (e) {
-//        console.log(colors.yellow('Ignoring GPS error: ' + e));
-//    }
-//    if (portstatus.printdata) {
-//        console.log(data);
-//    }
-//});
+parser.on('data', function(data) {
+    if (portstatus.useparser) {
+        if (portstatus.printdata) {
+            console.log(data);
+        }
+        try {
+            gps.update(data);
+        } catch (e) {
+            console.log(colors.yellow('Ignoring GPS error: ' + e));
+        }
+    }
+});

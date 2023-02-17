@@ -114,6 +114,12 @@
                         <input class="uk-checkbox" id="printdata" type="checkbox">
                     </div>
                 </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="useparser">Use Parser (it may not work with virtual serial ports)</label>
+                    <div class="uk-form-controls">
+                        <input class="uk-checkbox" id="useparser" type="checkbox" checked>
+                    </div>
+                </div>
                 <p class="uk-text-right">
                     <button id="cancel" class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
                     <button id="save" class="uk-button uk-button-primary" type="button">Save</button>
@@ -160,10 +166,11 @@
                 if (e.target.id == 'save') {
                     var port = document.getElementById('portsec').value;
                     var printdata = document.getElementById('printdata').checked;
+                    var useparser = document.getElementById('useparser').checked;
                     var xhr = new XMLHttpRequest();
                     xhr.open('POST', '/settings', true);
                     xhr.setRequestHeader('Content-Type', 'application/json');
-                    xhr.send(JSON.stringify({port: port, printdata: printdata}));
+                    xhr.send(JSON.stringify({port: port, printdata: printdata, useparser: useparser}));
                     UIkit.modal('#settings').hide();
                     document.getElementById('port').value = port;
                 }
@@ -175,7 +182,7 @@
                         message: 'Device disconnected!',
                         status: 'warning',
                         pos: 'top-center',
-                        timeout: 3000
+                        timeout: 1500
                     });
                 };
                 document.getElementById('port').value = status.port;
@@ -203,6 +210,12 @@
                     document.getElementById('printdata').checked = true;
                 } else {
                     document.getElementById('printdata').checked = false;
+                }
+
+                if (status.useparser) {
+                    document.getElementById('useparser').checked = true;
+                } else {
+                    document.getElementById('useparser').checked = false;
                 }
             });
 
