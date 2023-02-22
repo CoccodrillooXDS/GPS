@@ -78,7 +78,6 @@ This project is designed to work with **CP210x**.
 </details>
 
 ## Arduino Setup
-**Disconnect everything from the Arduino before proceeding**
 
 There are two versions of the Arduino sketch:
 * One with the **APC220** module (**[radio_arduino.ino](arduino/radio_arduino/radio_arduino.ino)**)
